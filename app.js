@@ -4,10 +4,28 @@
 const express = require("express");
 
 const app = express();
-const ExpressError = require("./expressError")
+const ExpressError = require("./expressError");
+
+const db = require("./db");
+const companiesRoutes = require('./routes/companies');
+const invoiceRoutes = require('./routes/invoices');
+
 
 app.use(express.json());
 
+app.get('/', async (req, res, next) => {
+
+  try{
+    const results = await db.query('SELECT * FROM companies')
+    return res.json(results.rows)
+  }
+  catch(e){
+    next(e);
+  }
+})
+
+app.use('/companies', companiesRoutes);
+app.use('/invoices', invoiceRoutes);
 
 /** 404 handler */
 
