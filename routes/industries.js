@@ -50,6 +50,39 @@ router.post('/', async (req, res, next) => {
   }
 })
 
+/* 
+This route will allow you to associate a industry with a company 
+
+This POST route will expect the following type of code: 
+
+{
+"company_code" : "a-company-code"
+}
+
+*/
+router.post('/:code', async (req, res, next) => {
+  try {
+    
+    let {company_code} = req.body; /* extracts name and desc from the body */
+    let {code} = req.params;
+
+    /* This will construct the SQL query and makes sure to use sanatization to avoid SQL injection */
+    const result = await db.query(
+          `INSERT INTO companies_industries (comp_code, indus_code) 
+           VALUES ($1, $2) 
+           RETURNING comp_code, indus_code`,
+        [company_code, code]);
+
+    return res.status(201).json({"industry": result.rows[0]}); /* returns the created object */
+  }
+
+  catch (err) {
+    return next(err);
+  }
+})
+
+
+
 
 
 
