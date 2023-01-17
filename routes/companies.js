@@ -20,15 +20,23 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-
+/* This will get all the info for a specific company */
 router.get('/:code', async (req, res, next) => {
+  const {code} = req.params; /* This will get the company code */
   try{
-    const results = await db.query(`SELECT * FROM companies WHERE code = $1`, [req.params.code])
+    const results = await db.query(`SELECT * FROM companies WHERE code = $1`, [code])
+    const industries =  await db.query(`SELECT i.industry 
+    FROM companies c
+    JOIN companies_industries ci
+    ON c.code = ci.comp_code
+    JOIN industries i 
+    ON ci.indus_code = i.code
+    WHERE c.code = $1;`, [code]);
 
     if(results.rows.length === 0) {
       throw new ExpressError('not found', 404);
     } else {
-      return res.json({'company': results.rows})
+      return res.json({'company': results.rows, 'industries' : industries.rows.map( (item) => item.industry)})
     }
   }
   catch (err) {
@@ -36,7 +44,7 @@ router.get('/:code', async (req, res, next) => {
   }
 })
 
-/* This is the companies post route */
+/* This is the companies post route and will add a company */
 router.post('/', async (req, res, next) => {
   try {
     

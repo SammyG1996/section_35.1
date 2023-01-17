@@ -9,6 +9,7 @@ const ExpressError = require("./expressError");
 const db = require("./db");
 const companiesRoutes = require('./routes/companies');
 const invoiceRoutes = require('./routes/invoices');
+const industriesRoutes = require('./routes/industries')
 
 
 app.use(express.json());
@@ -26,6 +27,7 @@ app.get('/', async (req, res, next) => {
 
 app.use('/companies', companiesRoutes);
 app.use('/invoices', invoiceRoutes);
+app.use('/industries', industriesRoutes);
 
 /** 404 handler */
 
@@ -44,6 +46,8 @@ app.use((err, req, res, next) => {
     message: err.message
   });
 });
+
+
 
 
 module.exports = app;
